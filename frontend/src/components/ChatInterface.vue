@@ -10,14 +10,24 @@
         </div>
         <div class="chat-footer">
             <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type a message..." />
-            <button @click="sendMessage">Send</button>
+            <button @click="startVoiceChat">🎤</button> <!-- Microphone button -->
+            <button @click="sendMessage">💬</button>
         </div>
+
+        <voice-chat ref="voiceChat" @transcriptionUpdate="handleTranscriptionUpdate"
+            @sendTranscription="handleSendTranscription" />
+
+
     </div>
 </template>
 <script>
-import ChatAPI from '@/services/ChatAPI'; // Make sure the path is correct
+import ChatAPI from '@/services/ChatAPI';
+import VoiceChat from './VoiceChat.vue';
 
 export default {
+    components: {
+        VoiceChat
+    },
     data() {
         return {
             messages: [],
@@ -27,22 +37,15 @@ export default {
     methods: {
         sendMessage() {
             if (!this.newMessage) return;
-
-            // Add the message to the local state
             this.addMessage(this.newMessage, true);
-
-            // Send the message to the backend using ChatAPI service
             ChatAPI.sendMessageToChat(this.newMessage)
                 .then(response => {
-                    // Display the response from the chatbot
                     this.addMessage(response.data.reply, false);
                 })
                 .catch(error => {
                     console.error('Error sending message:', error);
-                    // Handle error, potentially displaying an error message to the user
                 });
 
-            // Reset the input
             this.newMessage = '';
         },
         addMessage(content, isMine) {
@@ -50,8 +53,32 @@ export default {
                 content,
                 isMine
             });
+        },
+
+        sendMessageToChat(message) {
+            ChatAPI.sendMessageToChat(message)
+                .then(response => {
+                    this.addMessage(response.data.reply, false);
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                });
+        },
+        handleTranscriptionUpdate(transcribedText) {
+            this.newMessage = transcribedText;
+        },
+        startVoiceChat() {
+            this.$refs.voiceChat.startListening();
+        },
+        handleSendTranscription(transcribedText) {
+            if (transcribedText.trim().length > 0) {
+                this.newMessage = transcribedText;
+                this.sendMessage();
+            }
         }
-    }
+    },
+
+
 };
 </script>
 
@@ -62,7 +89,6 @@ export default {
     right: 20px;
     width: 300px;
     max-width: 80%;
-    /* You can adjust this as necessary */
     height: 400px;
     background-color: #fff;
     border: 1px solid #ddd;
@@ -71,7 +97,6 @@ export default {
     flex-direction: column;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     z-index: 1000;
-    /* Ensure it's above other elements */
 }
 
 .chat-header {
