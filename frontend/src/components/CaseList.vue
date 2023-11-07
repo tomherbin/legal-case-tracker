@@ -9,7 +9,8 @@
             <v-list-item v-for="caseItem in cases" :key="caseItem._id" @click="editCase(caseItem._id)">
               <v-list-item-content>
                 <v-list-item-title> {{ caseItem.title }} </v-list-item-title>
-                <v-list-item-subtitle>{{ caseItem.status }} </v-list-item-subtitle>
+                <v-list-item-subtitle :class="getStatusColor(caseItem.status)">{{ caseItem.status
+                }}</v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
@@ -60,7 +61,34 @@ export default {
     editCase(caseId) {
       this.$router.push({ name: 'EditCase', params: { id: caseId } });
     },
+    getStatusColor(status) {
+      if (status === 'Open') {
+        return 'open-status';
+      } else if (status === 'In Progress') {
+        return 'in-progress-status';
+      } else if (status === 'Closed') {
+        return 'closed-status';
+      }
+      return ''; // Default, no additional class
+    },
   },
 };
 </script>
 
+<style>
+/* Add these styles inside the <style> tag */
+.open-status {
+  color: green;
+  font-weight: 800;
+}
+
+.in-progress-status {
+  color: orange;
+  font-weight: 800;
+}
+
+.closed-status {
+  color: red;
+  font-weight: 800;
+}
+</style>
