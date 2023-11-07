@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const http = require("http");
 const socketIo = require("socket.io");
 const casesRouter = require("./routes/caseRoutes"); // Import the cases router
+const chatRoutes = require("./routes/chatRoutes"); // Import the cases router
 
 const app = express();
 const server = http.createServer(app);
@@ -35,6 +36,8 @@ mongoose
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.use("/api/cases", casesRouter);
+
+app.use("/api/chat", chatRoutes); // Register the routes
 
 io.on("connection", (socket) => {
   console.log("New client connected");

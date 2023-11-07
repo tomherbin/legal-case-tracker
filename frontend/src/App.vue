@@ -2,15 +2,18 @@
   <div id="app">
     <RealTimeClock />
     <router-view />
+    <ChatInterface />
   </div>
 </template>
 
 <script>
+import ChatInterface from './components/ChatInterface.vue';
 import RealTimeClock from './components/RealTimeUserStatus.vue';
 export default {
   name: 'App',
   components: {
-    RealTimeClock
+    RealTimeClock,
+    ChatInterface
   }
 }
 </script>
