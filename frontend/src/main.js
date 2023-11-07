@@ -9,6 +9,7 @@ import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import { io } from "socket.io-client";
 
 const vuetify = createVuetify({
   components,
@@ -19,5 +20,9 @@ const app = createApp(App);
 
 app.use(router);
 app.use(store);
+
+// Connect to Socket.IO server
+const socket = io("http://localhost:3000");
+app.config.globalProperties.$socket = socket;
 
 app.use(vuetify).mount("#app");

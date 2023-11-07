@@ -1,9 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const http = require("http");
+const socketIo = require("socket.io");
 const casesRouter = require("./routes/caseRoutes"); // Import the cases router
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:8080", // or the domain from which your front-end will be served
+    methods: ["GET", "POST"],
+  },
+});
+
 app.use(
   cors({
     origin: "http://localhost:8080", // or the domain from which your front-end will be served
@@ -24,11 +34,24 @@ mongoose
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
-// Use the cases router for any requests to the '/api/cases' endpoint
 app.use("/api/cases", casesRouter);
 
-// Start the server
+io.on("connection", (socket) => {
+  console.log("New client connected");
+
+  socket.on("data-update", (data) => {
+    socket.broadcast.emit("data-update", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+  });
+});
+
+app.set("io", io);
+
+// Start the server with Socket.IO
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

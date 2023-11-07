@@ -39,6 +39,8 @@ router.post("/", async (req, res) => {
     });
 
     const savedCase = await newCase.save();
+    const io = req.app.get("io");
+    io.emit("case-created");
     res.status(201).json(savedCase);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -53,6 +55,8 @@ router.put("/:id", async (req, res) => {
     });
     if (!updatedCase)
       return res.status(404).send("The case with the given ID was not found.");
+    const io = req.app.get("io");
+    io.emit("case-updated");
     res.json(updatedCase);
   } catch (err) {
     res.status(400).json({ message: err.message });

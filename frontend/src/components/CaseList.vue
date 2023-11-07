@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import io from 'socket.io-client';
 import CasesAPI from '@/services/CasesAPI';
 
 export default {
@@ -27,10 +28,25 @@ export default {
   data() {
     return {
       cases: [],
+      socket: null,
     };
   },
   created() {
+    this.socket = io('http://localhost:3000');
+
     this.fetchCases();
+
+    this.socket.on('case-updated', () => {
+      this.fetchCases();
+    });
+    this.socket.on('case-created', () => {
+      this.fetchCases();
+    });
+  },
+  beforeUnmount() {
+    if (this.socket) {
+      this.socket.disconnect();
+    }
   },
   methods: {
     async fetchCases() {
@@ -47,3 +63,4 @@ export default {
   },
 };
 </script>
+

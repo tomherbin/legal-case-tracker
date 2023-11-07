@@ -1,12 +1,17 @@
 <template>
   <div id="app">
+    <RealTimeClock />
     <router-view />
   </div>
 </template>
 
 <script>
+import RealTimeClock from './components/RealTimeUserStatus.vue';
 export default {
-  name: 'App'
+  name: 'App',
+  components: {
+    RealTimeClock
+  }
 }
 </script>
 
