@@ -9,11 +9,16 @@
           <v-card-text>
             <v-form v-model="valid" ref="form" @submit.prevent="submitCase">
               <v-text-field v-model="caseData.title" label="Title" required></v-text-field>
+              <v-textarea v-model="caseData.summary" label="Summary" required></v-textarea>
               <v-textarea v-model="caseData.description" label="Description" required></v-textarea>
               <v-select v-model="caseData.status" :items="['Open', 'In Progress', 'Closed']" label="Status"
                 required></v-select>
-              <v-btn :disabled="!valid" color="success" class="mr-4" type="submit">
-                Submit Case
+              <v-btn :loading="loading" :disabled="!valid || loading" color="success" class="mr-4" type="submit">
+                {{ loading ? 'Saving...' : 'Submit Case' }}
+              </v-btn>
+              <!-- Delete Button - Only shows in Edit Mode -->
+              <v-btn v-if="isEditMode" color="error" class="mr-4" @click="deleteCase">
+                Delete Case
               </v-btn>
             </v-form>
           </v-card-text>
@@ -31,8 +36,10 @@ export default {
   data() {
     return {
       valid: true,
+      loading: false,
       caseData: {
         title: '',
+        summary: '',
         description: '',
         status: 'Open',
       },
@@ -55,6 +62,7 @@ export default {
       }
     },
     async submitCase() {
+      this.loading = true;
       if (this.$refs.form.validate()) {
         try {
           let response;
@@ -72,7 +80,16 @@ export default {
           console.error('Error submitting case', error);
         }
       }
+      this.loading = false;
     },
+    async deleteCase() {
+      try {
+        await CasesAPI.deleteCase(this.$route.params.id);
+        this.$router.push('/');
+      } catch (error) {
+        console.error('Error deleting case', error);
+      }
+    }
   },
 };
 </script>

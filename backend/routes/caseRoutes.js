@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Case = require("../models/Case");
+const { generateSummary } = require("../services/summaryService");
 
 // Get all cases
 router.get("/", async (req, res) => {
@@ -24,20 +25,23 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST a new case
 router.post("/", async (req, res) => {
-  const newCase = new Case({
-    title: req.body.title,
-    description: req.body.description,
-    status: req.body.status,
-    summary: req.body.summary,
-  });
+  const { title, description, status } = req.body;
 
   try {
+    const summary = await generateSummary(description);
+
+    const newCase = new Case({
+      title,
+      description,
+      status,
+      summary,
+    });
+
     const savedCase = await newCase.save();
     res.status(201).json(savedCase);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 

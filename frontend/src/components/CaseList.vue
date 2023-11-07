@@ -8,8 +8,8 @@
           <v-list-item-group>
             <v-list-item v-for="caseItem in cases" :key="caseItem._id" @click="editCase(caseItem._id)">
               <v-list-item-content>
-                <v-list-item-title>{{ caseItem.title }}</v-list-item-title>
-                <v-list-item-subtitle>{{ caseItem.status }}</v-list-item-subtitle>
+                <v-list-item-title> {{ caseItem.title }} </v-list-item-title>
+                <v-list-item-subtitle>{{ caseItem.status }} </v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
           </v-list-item-group>
